@@ -1,4 +1,4 @@
-export type SystemId = 'skeletal'|'muscular'|'arterial'|'venous'|'nervous'|'digestive'|'respiratory'|'urinary'|'lymphatic'|'endocrine'|'integumentary'|'connective'|'sensory'|'cardiac';
+export type SystemId = 'skeletal'|'muscular'|'arterial'|'venous'|'nervous'|'digestive'|'respiratory'|'urinary'|'lymphatic'|'endocrine'|'connective'|'sensory'|'cardiac';
 export const SYSTEMS: {id:SystemId;name:string;color:string;description:string}[] = [
  {id:'skeletal',name:'Skeleton',color:'#e2d9ba',description:'Bones form the supporting framework of the body, protect organs, and provide attachment points for muscles. Their internal tissue also stores minerals and produces blood cells.'},
  {id:'muscular',name:'Muscles',color:'#a85b50',description:'Skeletal muscles generate movement by pulling on their attachments. Together with tendons, they move joints, stabilize posture, and produce heat.'},
@@ -12,7 +12,6 @@ export const SYSTEMS: {id:SystemId;name:string;color:string;description:string}[
  {id:'urinary',name:'Urinary',color:'#b47961',description:'The kidneys filter blood and regulate fluid, electrolyte, and acid–base balance. Urine travels through the ureters to the bladder and exits through the urethra.'},
  {id:'lymphatic',name:'Lymphatic',color:'#879f7c',description:'Lymphatic vessels return excess tissue fluid to the circulation. Lymph nodes and other lymphoid organs support immune surveillance and responses.'},
  {id:'endocrine',name:'Endocrine',color:'#c5a09a',description:'Endocrine organs release hormones into the blood to coordinate processes such as metabolism, growth, stress responses, and reproduction.'},
- {id:'integumentary',name:'Body surface',color:'#ba9b7d',description:'The body surface provides an outer anatomical reference. The integumentary system forms a protective barrier and contributes to sensation and temperature regulation.'},
  {id:'connective',name:'Connective tissue',color:'#aec3bb',description:'Cartilage, ligaments, and other connective tissues support, connect, and separate structures. Their roles include stabilizing joints and distributing mechanical loads.'},
 ];
 export interface Part {id:string;name:string;conceptId:string;system:SystemId;chunk:number;positions:number;normals:number;indices:number;vertexCount:number;indexCount:number;bounds:[number[],number[]]}
@@ -34,7 +33,7 @@ export const EXPLANATIONS:Record<string,string> = {
 };
 export function explanation(name:string,system:SystemId){return EXPLANATIONS[name.toLowerCase()] ?? SYSTEMS.find(s=>s.id===system)?.description ?? '';}
 
-// Child-safe build: reproductive structures are never loaded, listed, searched or drawn.
+// Child-safe build: reproductive structures and the body-surface layer are never loaded, listed, searched or drawn.
 const HIDDEN_NAME=/penis|testi|scrot|prostat|seminal|epididym|deferent|pubic|genital|spermat/i;
-export const isChildSafe=(p:{name:string;system:string})=>p.system!=='reproductive'&&!HIDDEN_NAME.test(p.name);
+export const isChildSafe=(p:{name:string;system:string})=>p.system!=='reproductive'&&p.system!=='integumentary'&&!HIDDEN_NAME.test(p.name);
 export function childSafeAtlas(a:Atlas):Atlas{const parts=a.parts.filter(isChildSafe),ok=new Set(parts.map(p=>p.id));return {...a,parts,concepts:a.concepts.map(c=>({...c,elements:c.elements.filter(e=>ok.has(e))})).filter(c=>c.elements.length>0)};}
